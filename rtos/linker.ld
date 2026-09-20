@@ -36,10 +36,10 @@ SECTIONS
     .data :
     {
         . = ALIGN(4);
-        _sdata = .;           /* start of .data in RAM */
+        _sdata = .;
         *(.data*)
         . = ALIGN(4);
-        _edata = .;           /* end of .data in RAM */
+        _edata = .;
     } > RAM AT> FLASH
 
     .bss :
