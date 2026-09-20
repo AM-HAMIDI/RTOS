@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdarg.h>
-#include <uart.h>
-#include <kprintf.h>
+#include "uart.h"
+#include "kprintf.h"
 
 #define TERMINATOR        '\0'
 #define TYPE_IDENTIFIER   '%'
@@ -25,24 +25,27 @@ static void print_uint(uint32_t num , uint32_t base)
 
 void kprintf(const char* fmt , ...)
 {
-    va_list arg_list;
-    va_start(arg_list , fmt);
+    va_list ap;
+    va_start(ap , fmt);
 
-    while(*fmt)
+    for(;*fmt;fmt++)
     {
+        if(*fmt != TYPE_IDENTIFIER)
+        {
+            uart_putc(*fmt);
+            continue;
+        }
+        
+        fmt++;
+
         switch (*fmt)
         {
-        case TERMINATOR:
-            /* code */
-            break;
-        case TYPE_IDENTIFIER:
-
-            break;
         case CHAR_IDENTIFIER:
-            
+            uart_putc((char)va_arg(ap , int)); // char promoted to int
             break;
         case STR_IDENTIFIER:
-
+            const char* s = va_arg(ap , const char*);
+            uart_puts(s ? s : "(null)");
             break;
         case INT_IDENTIFIER:
 

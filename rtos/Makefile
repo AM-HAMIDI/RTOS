@@ -1,7 +1,8 @@
 CC      = arm-none-eabi-gcc
 QEMU   ?= qemu-system-arm
 
-SRCS    = startup.c main.c uart.c
+# Added kprintf.c here so it gets compiled and linked
+SRCS    = startup.c main.c uart.c kprintf.c 
 OBJS    = $(SRCS:.c=.o)
 
 CFLAGS  = -mcpu=cortex-m3 -mthumb -ffreestanding -g -O0 -Wall -Wextra \
