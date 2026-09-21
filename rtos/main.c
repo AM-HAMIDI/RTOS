@@ -10,6 +10,7 @@ volatile int g_bss;             /* .bss: must end up zero */
 
 int main(void)
 {
+    
     kprintf("\n=== RTOS Phase 0 ===\n");
     kprintf("g_data = 0x%x (expect 0x1234)\n", (uint32_t)g_data);
     kprintf("g_bss  = %u   (expect 0)\n",      (uint32_t)g_bss);
