@@ -11,16 +11,44 @@
 #define INT_IDENTIFIER    'd'
 #define UINT_IDENTIFIER   'u'
 
-// Signed integer kprints
-static void print_sint(int32_t num , int32_t base)
-{
+#define MINUS_SIGN '-'
+#define DECIMAL_BASE 10
+#define HEXADECIMAL_BASE 16
 
+#define IS_DECIMAL_DIGIT(X) (0 <= X && X <= 9)
+#define IS_HEXADECIMAL_DIGIT(X) (0 <= X && X <= 15)
+#define CONVERT_DEC_TO_ASCII(DIGIT) ((DIGIT) + '0')
+#define CONVERT_HEX_TO_ASCII(DIGIT) (IS_DECIMAL_DIGIT(DIGIT) ? CONVERT_TO_ASCII(DIGIT) : ((DIGIT) + 'a'))
+
+static void print_sint(int32_t num , uint32_t base);
+static void print_uint(uint32_t num , uint32_t base);
+
+// Signed integer kprints
+static void print_sint(int32_t num , uint32_t base)
+{
+    if(num < 0)
+    {
+        uart_putc(MINUS_SIGN);
+        num = 0u - num;
+    }
+
+    print_uint(num , base);
 }
 
 // Unsigned integer kprints
 static void print_uint(uint32_t num , uint32_t base)
-{
+{   
+    if(num == 0)
+    {
+        uart_putc(CONVERT_DEC_TO_ASCII(0));
+        return;
+    }
 
+    while(num > 0)
+    {
+        uart_putc(CONVERT_DEC_TO_ASCII(num % base));
+        num /= base;
+    }
 }
 
 void kprintf(const char* fmt , ...)
@@ -48,11 +76,13 @@ void kprintf(const char* fmt , ...)
             uart_puts(s ? s : "(null)");
             break;
         case INT_IDENTIFIER:
-
+            int num = va_arg(ap , int);
+            print_sint((int32_t)num , DECIMAL_BASE);
             break;
         case UINT_IDENTIFIER:
-
-            break;
+            unsigned int num = va_arg(ap , unsigned int);
+            print_uint((uint32_t)num , DECIMAL_BASE);
+            break;  
         default:
             break;
         }
