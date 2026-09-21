@@ -1,32 +1,43 @@
-CC      = arm-none-eabi-gcc
-QEMU   ?= qemu-system-arm
+CC = arm-none-eabi-gcc
+QEMU ?= qemu-system-arm
 
-# Added kprintf.c here so it gets compiled and linked
-SRCS    = startup.c main.c uart.c kprintf.c 
-OBJS    = $(SRCS:.c=.o)
+BUILD_DIR = build
 
-CFLAGS  = -mcpu=cortex-m3 -mthumb -ffreestanding -g -O0 -Wall -Wextra \
-          -ffunction-sections -fdata-sections -MMD -MP
+SRCS = startup.c main.c uart.c kprintf.c systick.c
+OBJS = $(addprefix $(BUILD_DIR)/,$(SRCS:.c=.o))
+DEPS = $(OBJS:.o=.d)
+
+CFLAGS = -mcpu=cortex-m3 -mthumb -ffreestanding -g -O0 -Wall -Wextra \
+ -ffunction-sections -fdata-sections -MMD -MP
 LDFLAGS = -T linker.ld -nostdlib -nostartfiles \
-          -Wl,-Map=kernel.map -Wl,--gc-sections
+ -Wl,-Map=$(BUILD_DIR)/kernel.map -Wl,--gc-sections
 
-kernel.elf: $(OBJS) linker.ld
+ELF = $(BUILD_DIR)/kernel.elf
+
+all: $(ELF)
+
+$(ELF): $(OBJS) linker.ld | $(BUILD_DIR)
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) -o $@
 
-%.o: %.c
+$(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-run: kernel.elf
-	$(QEMU) -M lm3s6965evb -kernel kernel.elf -nographic
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
 
-debug: kernel.elf
-	$(QEMU) -M lm3s6965evb -kernel kernel.elf -nographic -S -gdb tcp::1234
+run: $(ELF)
+	$(QEMU) -M lm3s6965evb -kernel $(ELF) -nographic
 
-check: kernel.elf
-	arm-none-eabi-objdump -h kernel.elf
-	arm-none-eabi-nm kernel.elf | grep -E "_estack|_sidata|_sdata|_edata|_sbss|_ebss"
+debug: $(ELF)
+	$(QEMU) -M lm3s6965evb -kernel $(ELF) -nographic -S -gdb tcp::1234
+
+check: $(ELF)
+	arm-none-eabi-objdump -h $(ELF)
+	arm-none-eabi-nm $(ELF) | grep -E "_estack|_sidata|_sdata|_edata|_sbss|_ebss"
 
 clean:
-	rm -f *.o *.d kernel.elf kernel.map
+	rm -rf $(BUILD_DIR)
 
--include $(OBJS:.o=.d)
+.PHONY: all run debug check clean
+
+-include $(DEPS)
