@@ -3,17 +3,20 @@
 #include "uart.h"
 #include "kprintf.h"
 
-#define TERMINATOR        '\0'
-#define TYPE_IDENTIFIER   '%'
+#define TERMINATOR         '\0'
+#define TYPE_IDENTIFIER    '%'
 
-#define STR_IDENTIFIER    's'
-#define CHAR_IDENTIFIER   'c'
-#define INT_IDENTIFIER    'd'
-#define UINT_IDENTIFIER   'u'
+#define STR_IDENTIFIER     's'
+#define CHAR_IDENTIFIER    'c'
+#define INT_IDENTIFIER     'd'
+#define UINT_IDENTIFIER    'u'
+#define HEX_IDENTIFIER     'x'
+#define POINTER_IDENTIFIER 'p'
 
 #define MINUS_SIGN '-'
-#define DECIMAL_BASE 10
-#define HEXADECIMAL_BASE 16
+#define OCT_BASE 8
+#define DEC_BASE 10
+#define HEX_BASE 16
 
 #define IS_DECIMAL_DIGIT(X) (0 <= X && X <= 9)
 #define IS_HEXADECIMAL_DIGIT(X) (0 <= X && X <= 15)
@@ -76,14 +79,26 @@ void kprintf(const char* fmt , ...)
             uart_puts(s ? s : "(null)");
             break;
         case INT_IDENTIFIER:
-            int num = va_arg(ap , int);
-            print_sint((int32_t)num , DECIMAL_BASE);
+            print_sint(va_arg(ap , int) , DEC_BASE);
             break;
         case UINT_IDENTIFIER:
-            unsigned int num = va_arg(ap , unsigned int);
-            print_uint((uint32_t)num , DECIMAL_BASE);
+            print_uint(va_arg(ap , uint32_t) , DEC_BASE);
             break;  
+        case HEX_IDENTIFIER:
+            print_uint(va_arg(ap , uint32_t) , HEX_BASE);
+            break;
+        case POINTER_IDENTIFIER:
+            
+            break;
+        case '%':
+            uart_putc('%');
+            break;
+        case '\0':
+            va_end(ap);
+            return;
         default:
+            uart_putc('%');
+            uart_putc(*fmt);
             break;
         }
     }

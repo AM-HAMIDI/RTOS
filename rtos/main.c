@@ -2,6 +2,7 @@ volatile int g_data = 0x1234;   /* .data: needs the flash -> RAM copy */
 volatile int g_bss;             /* .bss: must end up zero */
 
 #include "kprintf.h"
+#include "systick.h"
 
 int main(void)
 {
