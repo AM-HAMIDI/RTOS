@@ -5,7 +5,7 @@
 #define MOCK_EXIT_HANDLER 0xFFFFFFFFu // Todo : should change to real exit handler address
 
 void task_create(tcb_t *tcb, uint32_t *stack_base, uint32_t stack_words,
-                  task_func_t entry, void *arg, task_priority_t priority)
+                  task_func_t entry, void *arg, uint32_t priority)
 {
     uint32_t *sp = stack_base + stack_words;
 
