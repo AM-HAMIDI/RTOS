@@ -5,12 +5,12 @@ volatile int g_bss;             /* .bss: must end up zero */
 #include "kprintf.h"
 #include "systick.h"
 
+#define HARD_CRASH       __asm volatile ("udf #0")
 #define CYCLES_PER_TICK  1000000u
 #define PRINT_EVERY_TICK 10u
 
 int main(void)
 {
-    
     kprintf("\n=== RTOS Phase 0 ===\n");
     kprintf("g_data = 0x%x (expect 0x1234)\n", (uint32_t)g_data);
     kprintf("g_bss  = %u   (expect 0)\n",      (uint32_t)g_bss);
@@ -18,6 +18,8 @@ int main(void)
     // Setup systick
     systick_init(CYCLES_PER_TICK);
     kprintf("SysTick started\n");
+
+    HARD_CRASH;
 
     uint32_t last = 0;
     while (1) {

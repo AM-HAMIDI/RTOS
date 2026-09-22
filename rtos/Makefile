@@ -3,7 +3,7 @@ QEMU ?= qemu-system-arm
 
 BUILD_DIR = build
 
-SRCS = startup.c main.c uart.c kprintf.c systick.c
+SRCS = startup.c main.c uart.c kprintf.c systick.c fault_handler.c
 OBJS = $(addprefix $(BUILD_DIR)/,$(SRCS:.c=.o))
 DEPS = $(OBJS:.o=.d)
 

@@ -34,4 +34,4 @@
 void systick_init(uint32_t cycles_per_tick);
 uint32_t systick_get_ticks(void);
 
-#endif SYSTICK_H
+#endif
