@@ -1,14 +1,24 @@
+# ToDo : Polish and clean project build 
+
 CC = arm-none-eabi-gcc
 QEMU ?= qemu-system-arm
 
 BUILD_DIR = build
+KERNEL_DIR = ../kernel
 
-SRCS = startup.c main.c uart.c kprintf.c systick.c fault_handler.c
+# Include search path for headers like task.h
+INCLUDES = -I. -I$(KERNEL_DIR)
+
+# Source files (task.c added)
+SRCS = startup.c main.c uart.c kprintf.c systick.c fault_handler.c task.c
 OBJS = $(addprefix $(BUILD_DIR)/,$(SRCS:.c=.o))
 DEPS = $(OBJS:.o=.d)
 
+# VPATH tells make where to find .c files not in the current working directory
+VPATH = $(KERNEL_DIR)
+
 CFLAGS = -mcpu=cortex-m3 -mthumb -ffreestanding -g -O0 -Wall -Wextra \
- -ffunction-sections -fdata-sections -MMD -MP
+ -ffunction-sections -fdata-sections -MMD -MP $(INCLUDES)
 LDFLAGS = -T linker.ld -nostdlib -nostartfiles \
  -Wl,-Map=$(BUILD_DIR)/kernel.map -Wl,--gc-sections
 

@@ -4,10 +4,13 @@ volatile int g_bss;             /* .bss: must end up zero */
 #include <stdint.h>
 #include "kprintf.h"
 #include "systick.h"
+#include "task.h"
 
 #define HARD_CRASH       __asm volatile ("udf #0")
 #define CYCLES_PER_TICK  1000000u
 #define PRINT_EVERY_TICK 10u
+
+void dummy_task(void *arg) { (void)arg; while (1) {} }
 
 int main(void)
 {
@@ -19,7 +22,13 @@ int main(void)
     systick_init(CYCLES_PER_TICK);
     kprintf("SysTick started\n");
 
-    HARD_CRASH;
+    // HARD_CRASH;
+
+    uint32_t test_stack[64];
+    tcb_t test_tcb;
+
+    task_create(&test_tcb, test_stack, 64, dummy_task, (void *)0x99, 1);
+    kprintf("sp = 0x%x\n", (uint32_t)test_tcb.sp);
 
     uint32_t last = 0;
     while (1) {
