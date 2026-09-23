@@ -1,4 +1,6 @@
+#include <stddef.h>
 #include "systick.h"
+#include "schedular.h"
 
 #define SYST_CSR (*(volatile uint32_t *)0xE000E010u)
 #define SYST_RVR (*(volatile uint32_t *)0xE000E014u)
@@ -31,6 +33,9 @@ void systick_init(uint32_t cycles_per_tick)
 void SysTick_Handler(void)
 {
     tick_count++;
+    if (current_task != NULL) {       /* only switch once a real task is running */
+        scheduler_tick();
+    }
 }
 
 uint32_t systick_get_ticks(void)

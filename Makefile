@@ -1,53 +1,35 @@
-# ToDo : Polish and clean project build 
-
-CC = arm-none-eabi-gcc
-QEMU ?= qemu-system-arm
+CC      = arm-none-eabi-gcc
+QEMU   ?= qemu-system-arm
 
 BUILD_DIR = build
-KERNEL_DIR = ../kernel
 
-# Include search path for headers like task.h
-INCLUDES = -I. -I$(KERNEL_DIR)
-
-# Source files (task.c added)
-SRCS = startup.c main.c uart.c kprintf.c systick.c fault_handler.c task.c
-OBJS = $(addprefix $(BUILD_DIR)/,$(SRCS:.c=.o))
+SRCS = $(wildcard arch/*.c) $(wildcard hal/*.c) $(wildcard kernel/*.c) main.c
+OBJS = $(patsubst %.c,$(BUILD_DIR)/%.o,$(SRCS))
 DEPS = $(OBJS:.o=.d)
 
-# VPATH tells make where to find .c files not in the current working directory
-VPATH = $(KERNEL_DIR)
+INCLUDES = -Iarch -Ihal -Ikernel -I.
 
-CFLAGS = -mcpu=cortex-m3 -mthumb -ffreestanding -g -O0 -Wall -Wextra \
- -ffunction-sections -fdata-sections -MMD -MP $(INCLUDES)
-LDFLAGS = -T linker.ld -nostdlib -nostartfiles \
- -Wl,-Map=$(BUILD_DIR)/kernel.map -Wl,--gc-sections
+CFLAGS  = -mcpu=cortex-m3 -mthumb -ffreestanding -g -O0 -Wall -Wextra \
+          -ffunction-sections -fdata-sections $(INCLUDES) \
+          -MMD -MP
 
-ELF = $(BUILD_DIR)/kernel.elf
+LDFLAGS = -mcpu=cortex-m3 -mthumb -nostdlib -Wl,--gc-sections
 
-all: $(ELF)
+.PHONY: all clean run
 
-$(ELF): $(OBJS) linker.ld | $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) -o $@
+all: $(BUILD_DIR)/main.elf
 
-$(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
+$(BUILD_DIR)/main.elf: $(OBJS)
+	$(CC) $(LDFLAGS) -T arch/linker.ld -o $@ $^
+
+$(BUILD_DIR)/%.o: %.c
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+-include $(DEPS)
 
-run: $(ELF)
-	$(QEMU) -M lm3s6965evb -kernel $(ELF) -nographic
-
-debug: $(ELF)
-	$(QEMU) -M lm3s6965evb -kernel $(ELF) -nographic -S -gdb tcp::1234
-
-check: $(ELF)
-	arm-none-eabi-objdump -h $(ELF)
-	arm-none-eabi-nm $(ELF) | grep -E "_estack|_sidata|_sdata|_edata|_sbss|_ebss"
+run: $(BUILD_DIR)/main.elf
+	$(QEMU) -M lm3s6965evb -nographic -kernel $<
 
 clean:
 	rm -rf $(BUILD_DIR)
-
-.PHONY: all run debug check clean
-
--include $(DEPS)

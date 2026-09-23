@@ -1,5 +1,6 @@
-#include "schedular.h"
 #include <stddef.h>
+#include "schedular.h"
+#include "cpu.h"
 
 // These two should be visible to PendSV_Handler assembly function
 tcb_t *current_task; /* the task whose registers are IN the CPU right now */
@@ -22,4 +23,9 @@ tcb_t *scheduler_pick_next(void)
 {
     ready_list = ready_list->next;   /* rotate: next task in the circle */
     return ready_list;
+}
+
+void scheduler_tick(void)
+{
+    arch_trigger_context_switch();
 }

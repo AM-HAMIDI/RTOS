@@ -24,6 +24,5 @@ void task_create(tcb_t *tcb, uint32_t *stack_base, uint32_t stack_words,
                   task_func_t entry, void *arg, uint32_t priority);
     
 void task_exit_handler(void);
-void task_delete(void);
 
 #endif
