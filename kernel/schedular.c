@@ -1,4 +1,4 @@
-#include "task.h"
+#include "schedular.h"
 #include <stddef.h>
 
 // These two should be visible to PendSV_Handler assembly function
@@ -13,7 +13,7 @@ void scheduler_add(tcb_t *t)
         ready_list = t;
         t->next = t;              /* points to itself: circular list of one */
     } else {
-        t->next = ready_list->next; /* Shift and replace */
+        t->next = ready_list->next; /* Shift and place */
         ready_list->next = t;
     }
 }
