@@ -10,23 +10,21 @@ tcb_t *ready_list = NULL;           /* circular linked list of READY tasks */
 
 void scheduler_start(void)
 {
-    /* 1. Ensure current_task points to the initial task */
+    /* Set current_task to the first task in the ready list */
     current_task = ready_list;
 
-    /* 2. Configure PendSV to the lowest priority */
+    /* Set PendSV priority to lowest */
     arch_set_pendsv_priority();
 
-    /* 3. Configure and start the SysTick timer (e.g., 1ms tick) */
-    systick_init(1000);
-
-    /* 4. Trigger SVC 0 to enter SVC_Handler and start the first task */
+    /* Enable interrupts */
     __asm volatile ("cpsie i" : : : "memory");
+
+    /* Trigger SVC to unpack the first task onto PSP and branch to it */
     __asm volatile ("svc 0");
 
-    /* Never reached */
+    /* Fallback in case of error */
     while (1);
 }
-
 void scheduler_add(tcb_t *t)
 {
     if (ready_list == NULL) {

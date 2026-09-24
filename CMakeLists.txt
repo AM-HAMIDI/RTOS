@@ -9,11 +9,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 file(GLOB_RECURSE ARCH_SRCS   CONFIGURE_DEPENDS "arch/*.c")
 file(GLOB_RECURSE HAL_SRCS    CONFIGURE_DEPENDS "hal/*.c")
 file(GLOB_RECURSE KERNEL_SRCS CONFIGURE_DEPENDS "kernel/*.c")
+file(GLOB_RECURSE APP_SRCS    CONFIGURE_DEPENDS "app/*.c")
 
 set(SRCS
     ${ARCH_SRCS}
     ${HAL_SRCS}
     ${KERNEL_SRCS}
+    ${APP_SRCS}
     main.c
 )
 
@@ -38,6 +40,7 @@ target_include_directories(${TARGET} PRIVATE
     arch
     hal
     kernel
+    app
 )
 
 # ============ Link options ============

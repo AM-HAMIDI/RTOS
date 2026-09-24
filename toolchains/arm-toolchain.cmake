@@ -5,13 +5,12 @@ set(CMAKE_SYSTEM_PROCESSOR arm)
 set(CMAKE_C_COMPILER   arm-none-eabi-gcc)
 set(CMAKE_ASM_COMPILER arm-none-eabi-gcc)
 
-# ============ Extra tools ============
-find_program(CMAKE_OBJCOPY arm-none-eabi-objcopy)
-find_program(CMAKE_OBJDUMP arm-none-eabi-objdump)
-find_program(CMAKE_SIZE    arm-none-eabi-size)
-find_program(CMAKE_NM      arm-none-eabi-nm)
-find_program(CMAKE_GDB     gdb-multiarch)
-
+# ============ Extra tools (direct assignment) ============
+set(CMAKE_OBJCOPY arm-none-eabi-objcopy CACHE INTERNAL "")
+set(CMAKE_OBJDUMP arm-none-eabi-objdump CACHE INTERNAL "")
+set(CMAKE_SIZE    arm-none-eabi-size    CACHE INTERNAL "")
+set(CMAKE_NM      arm-none-eabi-nm      CACHE INTERNAL "")
+set(CMAKE_GDB     gdb-multiarch         CACHE INTERNAL "")
 
 # ============ CMake configurations ============
 set(CMAKE_C_FLAGS_INIT   "-mcpu=cortex-m3 -mthumb")

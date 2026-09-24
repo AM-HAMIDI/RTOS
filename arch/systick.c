@@ -30,6 +30,7 @@ void systick_init(uint32_t cycles_per_tick)
     systick_enable();               // Enable systic
 }
 
+// Index 15 exception in vector table
 void SysTick_Handler(void)
 {
     tick_count++;
