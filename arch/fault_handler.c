@@ -2,10 +2,10 @@
 #include "kprintf.h"
 
 // We will use hardfault handler for debugging for different faults of system
-
 void HardFault_Handler(void);
 void HardFault_Handler_C(uint32_t *stacked_regs);
 
+// Index 3 exception in vector table
 __attribute__((naked)) void HardFault_Handler(void)
 {
     __asm volatile (

@@ -46,6 +46,7 @@ const isr_t vector_table[] = {
     /* 16+: external IRQs, added later when we need them */
 };
 
+// Index 1 exception in vector table
 void Reset_Handler(void)
 {
     uint32_t *src = &_sidata;
