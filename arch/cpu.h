@@ -6,7 +6,7 @@
 /* ---- SCB: System Control Block ---- */
 // 0xE000E000 Region
 #define SCB_ICSR       (*(volatile uint32_t *)0xE000ED04u)
-#define SCB_SHPR3  (*(volatile uint32_t *)0xE000ED20u)
+#define SCB_SHPR3      (*(volatile uint32_t *)0xE000ED20u)
 
 #define ICSR_PENDSVSET (1u << 28)   /* write 1: request a PendSV */
 #define ICSR_PENDSVCLR (1u << 27)   /* write 1: cancel a pending (not-yet-run) PendSV */
